@@ -39,7 +39,7 @@ import {
   FormErrorMessage,
   FormLabel
 } from '@chakra-ui/react'
-import { FilterState, setFilters } from '../storage/filters';
+import { FilterType, getSuitablePlaces } from '../storage/filters';
 import { useAppDispatch } from '../storage/context';
 
 
@@ -59,12 +59,12 @@ const MainPage = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch();
   const Handler = (data: FieldValues) => {
-    const user_form: FilterState = {
+    const user_form: FilterType = {
       address: data.address,
       price: data.price,
       distance: sliderValue
     }
-    dispatch(setFilters(user_form))
+    dispatch(getSuitablePlaces(user_form))
     navigate("/result")
   }
 

@@ -36,40 +36,25 @@ import {
   ModalCloseButton,
   Heading
 } from '@chakra-ui/react'
-import { useAppSelector } from '../storage/context';
+import { useAppDispatch, useAppSelector } from '../storage/context';
+import { getSuitablePlaces } from '../storage/filters';
 
-
-const aboba = [{name: 'cock', age: '25'},{name: 'cock', age: '25'},{name: 'cock', age: '25'},{name: 'cock', age: '25'},{name: 'cock', age: '25'},{name: 'cock', age: '25'}]
 
 
 
 function ResultPage() {
-  const filter = useAppSelector(state => state.params);
-  const [data, setData] = useState([]);
-   useEffect(() => {
-    console.log(filter)
-    new Promise((resolve) => {
-      const response = await axios
-            .request({
-                method: "post",
-                url: `http://localhost:8080/v1/result`,
-                data: {
-                    street
-                },
-                withCredentials: true,
-            });
-      return setTimeout(() => resolve(aboba), 500)
-    }).then((data:unknown) => setData(data as never[]));
-   }, [])
+  const dispatch = useAppDispatch();
+  const {data} = useAppSelector((state) => state.params)
   return (
     <Flex className="App" direction={'column'} width={"100vw"} height={"100vh"} justifyContent={'center'} alignItems={'center'}>
       <Flex width={"90vw"} height={"90vh"} border={'solid'} borderRadius='10' borderColor={'grey'} wrap={'wrap'} alignContent={'flex-start'} padding={5} justifyContent={'start'} gap={5}>
-        {
+        { data &&
           data.map((item, idx) =>
             <Card key={idx} height={"24%"} border={'solid'} borderRadius='10' borderColor={'grey'} marginBottom={2} flex='0 1 24%'>
               <CardBody>
-               <Text>{(item as any).name}</Text>
-               <Text>{(item as any).age}</Text>
+               <Text>{item.name}</Text>
+               <Text>{item.place_type}</Text>
+               <Text>{item.link}</Text>
               </CardBody>
             </Card>
         )}
