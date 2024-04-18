@@ -37,10 +37,14 @@ import {
   ModalCloseButton,
   Heading,
   FormErrorMessage,
-  FormLabel
+  FormLabel,
+  background,
+  transition
 } from '@chakra-ui/react'
 import { FilterType, getSuitablePlaces } from '../storage/filters';
 import { useAppDispatch } from '../storage/context';
+import back from '../pictures/background.jpg'
+import { transform } from 'typescript';
 
 
 
@@ -73,19 +77,34 @@ const MainPage = () => {
   useEffect(() => {
     setCounter(10)
   }, [])
+const [isHover, setIsHover] = useState(false)
+const handleMouseEnter = () =>{
+  setIsHover(true);
+}
+const handleMouseLeave = () =>{
+  setIsHover(false);
+}
+const buttonStyle = {
+  borderRadius: '20px',
+  transform: isHover ? 'scale(1.2)' : 'scale(1)',
+  transition: '0.15s',
+  letterSpacing: isHover ? '0.15em' : '0',
+  backgroundColor: isHover ? 'rgb(32, 178, 170)' : 'white',
+};
+
   return (
-    <Flex className="App" direction={'column'} width={"100vw"} height={"100vh"} justifyContent={'center'} alignItems={'center'}>
+    <Flex className="App" direction={'column'} width={"100vw"} height={"100vh"} justifyContent={'center'} alignItems={'center'} backgroundImage={back} bgRepeat={'no-repeat'} bgSize={'cover'}>
       <Flex direction={'column'} justifyContent={'center'} alignItems={'center'}>
-        <Heading mb={'200'} fontSize='6xl' >Найди идеальное место для отдыха!</Heading>
-        <Text mb={'100'} fontSize='2xl'>Чтобы найти наиболее подходящее тебе место для отдыха, заполни форму по кнопке ниже и наслаждайся результатом!</Text>
+        <Heading mb={'200'} fontSize='6xl' textShadow='1px 1px' fontFamily={'monospace'}>Найди идеальное место для отдыха!</Heading>
+        <Text mb={'100'} fontSize='2xl' textShadow='1px 1px' fontFamily={'monospace'}>Заполни форму по кнопке ниже и наслаждайся результатом!</Text>
         <>
-          <Button onClick={onOpen}>Нажми, чтобы начать!</Button>
+          <Button onClick={onOpen} cursor={'pointer'} style={buttonStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} fontFamily={'monospace'}>Нажми, чтобы начать!</Button>
 
           <Modal onClose={onClose} isOpen={isOpen} isCentered>
             <ModalOverlay />
-            <ModalContent width={'50vw'} height={'70vh'}>
+            <ModalContent width={'50vw'} height={'70vh'} shadow='dark-lg'>
               <FormControl isRequired isInvalid>
-                <ModalHeader>Заполните данные для продолжения</ModalHeader>
+                <ModalHeader fontFamily={'monospace'}>Заполните данные для продолжения</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
 
@@ -129,7 +148,7 @@ const MainPage = () => {
                           <SliderMark
                             value={sliderValue}
                             textAlign='center'
-                            bg='blue.500'
+                            bg='rgb(32, 178, 170)'
                             color='white'
                             mt='-10'
                             ml='-5'
@@ -138,7 +157,7 @@ const MainPage = () => {
                             {sliderValue}км
                           </SliderMark>
                           <SliderTrack>
-                            <SliderFilledTrack />
+                            <SliderFilledTrack bg='rgb(32, 178, 170)'/>
                           </SliderTrack>
                           <SliderThumb />
                         </Slider>
@@ -163,11 +182,11 @@ const MainPage = () => {
                 </ModalBody>
                 <ModalFooter justifyContent={'space-between'} alignItems={'center'}>
                   <Flex>
-                    <Button bg='red' onClick={onClose}>Выход</Button>
+                    <Button mt='10' bg='red' onClick={onClose}>Выход</Button>
                   </Flex>
                   <Flex>
                     <Button
-                      mt={4}
+                      mt={10}
                       colorScheme='teal'
                       type='submit'
                       onClick={handleSubmit(Handler)}
