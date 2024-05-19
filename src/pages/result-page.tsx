@@ -68,7 +68,7 @@ function ResultPage() {
       <Flex width={"90vw"} height={"90vh"} border={'solid'} borderRadius='10' borderColor={'transparent'} wrap={'wrap'} alignContent={'flex-start'} padding={5} justifyContent={'start'} gap={5} bg={'transparent'} overflowY={'scroll'} overflowX={'hidden'} sx={scrollSettings}>
         {data &&
           data.map((item, idx) =>
-            <Card key={idx} shadow='dark-lg' height={"24%"} border={'solid'} borderRadius='10' borderColor={'transparent'} marginBottom={2} flex='0 1 24%' bg={'transparent'} backdropFilter={'blur(20px)'}>
+            <Card key={idx} shadow='dark-lg' height={"30%"} border={'solid'} borderRadius='10' borderColor={'transparent'} marginBottom={2} flex='0 1 24%' bg={'transparent'} backdropFilter={'blur(20px)'}>
               <CardBody>
                 <Flex alignItems={'center'} justifyContent={'flex-start'} gap={10}>
                   <Box minHeight={'130px'} minWidth={'130px'} maxHeight={'130px'} maxWidth={'130px'}>
@@ -86,6 +86,7 @@ function ResultPage() {
                     <Text>Название: {item.name}</Text>
                     <Text>Тип: {item.place_type}</Text>
                     <Link href={item.link} isExternal>Ссылка на сайт</Link>
+                    <Text>Стоимость:  {item.price}</Text>
                   </Stack>
                 </Flex>
               </CardBody>

@@ -5,7 +5,8 @@ import { RootState } from './context';
 export type FilterType = {
     address: string,
     distance: number,
-    price: number
+    price: number,
+    type: number
 }
 
 export type PlaceType = 'Музей'|'Кинотеатр'|'Театр'
@@ -15,25 +16,31 @@ export type PlaceData = {
     name: string,
     place_type: PlaceType,
     link: string,
+    price: string
 }
 
 export type PlacesState = {
     success: boolean;
     isError: boolean;
     errorMessage: string;
-    data: PlaceData[]
+    data: PlaceData[];
+    filters: FilterType | null;
 }
 
 
-export const getSuitablePlaces = createAsyncThunk<PlaceData[], FilterType, { rejectValue: string }>(
+export const getSuitablePlaces = createAsyncThunk<PlaceData[], void, { rejectValue: string }>(
     'filters/getSuitablePlaces',
-    async (filter, thunkAPI) => {
+    async (_, thunkAPI) => {
+        const {filters} = (thunkAPI.getState() as RootState).params;
+        if (!filters){
+            return thunkAPI.rejectWithValue('User doesnt enter anything')
+        }
         try {
             const response = await axios
             .request({
                 method: "post",
                 url: `http://localhost:8080/v1/result`,
-                data: filter,
+                data: filters,
                 headers: {
                     'Access-Control-Allow-Origin': "http://localhost:3000",
                 },
@@ -48,13 +55,18 @@ export const getSuitablePlaces = createAsyncThunk<PlaceData[], FilterType, { rej
     },
 )
 
-const initialState: PlacesState = { success: false, isError: false, errorMessage: '', data: []}
+const initialState: PlacesState = { success: false, isError: false, errorMessage: '', data: [], filters: null}
 
 
 const filterSlice = createSlice({
     name: 'filters',
     initialState,
-    reducers: {},
+    reducers: {
+        setFilters(state, action: PayloadAction <FilterType>){
+            state.filters = action.payload;
+            return state;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getSuitablePlaces.fulfilled, (state, action) => {
@@ -70,5 +82,5 @@ const filterSlice = createSlice({
             })
     }
 });
-
+export const {setFilters} = filterSlice.actions;
 export default filterSlice;

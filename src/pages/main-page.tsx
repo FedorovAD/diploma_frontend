@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Controller, FieldValues, SubmitHandler, useForm } from 'react-hook-form';
@@ -39,22 +39,38 @@ import {
   FormErrorMessage,
   FormLabel,
   background,
-  transition
+  transition,
+  Radio,
+  RadioGroup
 } from '@chakra-ui/react'
-import { FilterType, getSuitablePlaces } from '../storage/filters';
-import { useAppDispatch } from '../storage/context';
+import { FilterType, getSuitablePlaces, setFilters } from '../storage/filters';
+import { useAppDispatch, useAppSelector } from '../storage/context';
 import back from '../pictures/background.jpg'
 import { transform } from 'typescript';
 
-
+type FormData = {
+  address: string;
+  price: string;
+  type: string;
+}
 
 
 
 const MainPage = () => {
-  const { control, formState: { errors }, handleSubmit, register } = useForm()
+  const [value, setValue] = React.useState('1')
+  const { filters } = useAppSelector((state) => state.params)
+  const { control, formState: { errors }, handleSubmit, register } = useForm<FormData>({
+    defaultValues: useMemo(() => {
+      return {
+        address: filters?.address ?? '',
+        price: filters?.price.toString() ?? '',
+        type: filters?.type.toString() ?? '1'
+      }
+    }, [filters])
+  })
   const getErrorMessage = (fieldName: string, errs: Record<string, any>): string | undefined =>
     typeof errs?.[fieldName]?.message === 'string' ? errs?.[fieldName]?.message : undefined;
-  const [sliderValue, setSliderValue] = useState(5)
+  const [sliderValue, setSliderValue] = useState(filters?.distance ?? 5)
   const labelStyles = {
     mt: '2',
     ml: '-2.5',
@@ -65,10 +81,12 @@ const MainPage = () => {
   const Handler = (data: FieldValues) => {
     const user_form: FilterType = {
       address: data.address,
-      price: data.price,
-      distance: sliderValue
+      price: parseInt(data.price, 10),
+      distance: sliderValue,
+      type: parseInt(data.type, 10)
     }
-    dispatch(getSuitablePlaces(user_form))
+    dispatch(setFilters(user_form))
+    dispatch(getSuitablePlaces())
     navigate("/result")
   }
 
@@ -77,20 +95,20 @@ const MainPage = () => {
   useEffect(() => {
     setCounter(10)
   }, [])
-const [isHover, setIsHover] = useState(false)
-const handleMouseEnter = () =>{
-  setIsHover(true);
-}
-const handleMouseLeave = () =>{
-  setIsHover(false);
-}
-const buttonStyle = {
-  borderRadius: '20px',
-  transform: isHover ? 'scale(1.2)' : 'scale(1)',
-  transition: '0.15s',
-  letterSpacing: isHover ? '0.15em' : '0',
-  backgroundColor: isHover ? 'rgb(32, 178, 170)' : 'white',
-};
+  const [isHover, setIsHover] = useState(false)
+  const handleMouseEnter = () => {
+    setIsHover(true);
+  }
+  const handleMouseLeave = () => {
+    setIsHover(false);
+  }
+  const buttonStyle = {
+    borderRadius: '20px',
+    transform: isHover ? 'scale(1.2)' : 'scale(1)',
+    transition: '0.15s',
+    letterSpacing: isHover ? '0.15em' : '0',
+    backgroundColor: isHover ? 'rgb(32, 178, 170)' : 'white',
+  };
 
   return (
     <Flex className="App" direction={'column'} width={"100vw"} height={"100vh"} justifyContent={'center'} alignItems={'center'} backgroundImage={back} bgRepeat={'no-repeat'} bgSize={'cover'}>
@@ -157,7 +175,7 @@ const buttonStyle = {
                             {sliderValue}км
                           </SliderMark>
                           <SliderTrack>
-                            <SliderFilledTrack bg='rgb(32, 178, 170)'/>
+                            <SliderFilledTrack bg='rgb(32, 178, 170)' />
                           </SliderTrack>
                           <SliderThumb />
                         </Slider>
@@ -176,17 +194,36 @@ const buttonStyle = {
                           />
                         )}
                       />
+                      <FormLabel>Введите предпочитаемое место для посещения:</FormLabel>
+                      <Controller
+                        control={control}
+                        {...register("type", {
+                        })}
+                        render={({ field: { value, onChange } }) => (
+                          <RadioGroup onChange={onChange} value={value}>
+                            <Stack direction='row'>
+                              <Radio value='1'>Все</Radio>
+                              <Radio value='2'>Музей</Radio>
+                              <Radio value='3'>Театр</Radio>
+                              <Radio value='4'>Кинотеатр</Radio>
+                            </Stack>
+                          </RadioGroup>
+                           )}
+                           />
+                           <FormErrorMessage>
+                             {getErrorMessage('type', errors)}
+                           </FormErrorMessage>
                     </CardBody>
                   </Card>
 
                 </ModalBody>
                 <ModalFooter justifyContent={'space-between'} alignItems={'center'}>
                   <Flex>
-                    <Button mt='10' bg='red' onClick={onClose}>Выход</Button>
+                    <Button mt='3' bg='red' onClick={onClose}>Выход</Button>
                   </Flex>
                   <Flex>
                     <Button
-                      mt={10}
+                      mt={3}
                       colorScheme='teal'
                       type='submit'
                       onClick={handleSubmit(Handler)}
