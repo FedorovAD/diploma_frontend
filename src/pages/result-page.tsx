@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import axios from 'axios';
+import { Link as RouterLink } from 'react-router-dom';
 
 import {
   Box,
@@ -48,6 +49,7 @@ import theatre from '../pictures/theatre.png'
 
 
 function ResultPage() {
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const scrollSettings = {
     '&::-webkit-scrollbar': {
       width: '5px',
@@ -89,6 +91,11 @@ function ResultPage() {
               </CardBody>
             </Card>
           )}
+      </Flex>
+      <Flex justifyContent={'space-between'} alignItems={'center'}>
+      <Button bg='red' onClick={onClose}>
+        <RouterLink to={'/'}>Назад к выбору</RouterLink>
+      </Button>
       </Flex>
     </Flex>
   );
